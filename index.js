@@ -10,35 +10,28 @@
 var http = require('http');
 var url = require('url');
 var StringDecoder = require('string_decoder').StringDecoder;
+var handlers = require('./handlers');
 
 // Instantiating the http server
 var httpServer = http.createServer(function(req, res){
-  // Get the URL and parse it
+  // Get the URL and path
   var parsedUrl = url.parse(req.url, true);
-
-  // Get the path
   var path = parsedUrl.pathname;
   var trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
-  // Get the query string as an object
-  var queryStringObject = parsedUrl.query;
-
-  // Get the HTTP method
+  // Get the HTTP request method, query string, headers and payload payload
   var method = req.method.toLowerCase();
-
-  // Get the headers as an queryStringObject
+  var queryStringObject = parsedUrl.query;
   var headers = req.headers;
-
-  // Get the payload, if any
   var decoder = new StringDecoder('utf-8');
 
-  // Receives the stream and decode it
+  // Receiving data Event: Receives the stream and decode it
   var buffer = '';
   req.on('data', function (data) {
     buffer += decoder.write(data);
   });
 
-  // After the end of the stream
+  // End of data Event: After the end of the stream
   req.on('end', function () {
     buffer += decoder.end();
 
@@ -61,16 +54,12 @@ var httpServer = http.createServer(function(req, res){
 
       // Use the payload called back by the handler, or default to an empty object
       payload = typeof (payload) == 'object' ? payload : {};
-
-      // Convert the payload to a string
       var payloadString = JSON.stringify(payload);
 
       // Return the response
       res.setHeader('Content-Type', 'application/json');
       res.writeHead(statusCode);
       res.end(payloadString);
-
-      console.log('** statusCode: ', statusCode);
     });
   });
 });
@@ -79,21 +68,6 @@ var httpServer = http.createServer(function(req, res){
 httpServer.listen(3000, function(){
   console.log('The HTTP server is listening on the port 3000.');
 });
-
-// Define handlers
-var handlers = {};
-
-// Hello handler
-handlers.hello = function(data, callback){
-  callback(200, {'message': 'Welcome to the server!'});
-  console.log('The server received a Hello request.');
-};
-
-// Not found handler
-handlers.notFound = function(data, callback){
-  callback(404);
-  console.log('The handler does not exist.');
-};
 
 // Define a request router
 var router = {
