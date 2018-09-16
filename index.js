@@ -1,15 +1,15 @@
 /* index.js
 *
-* RESTful API implementation
-*
+* Homework 1 - PIRPLE 
+* App: RESTful API implementation
+* When someone posts anything to the route /hello, you should return a welcome message,
+ in JSON format.This message can be anything you want.
 */
 
 // Dependencies
 var http = require('http');
 var url = require('url');
 var StringDecoder = require('string_decoder').StringDecoder;
-var fs = require('fs');
-var config = require('./config');
 
 // Instantiating the http server
 var httpServer = http.createServer(function(req, res){
@@ -76,8 +76,8 @@ var httpServer = http.createServer(function(req, res){
 });
 
 // Start the http server
-httpServer.listen(config.httpPort, function(){
-  console.log('The HTTP server is listening on the port ' + config.httpPort + ' in mode ' + config.envName);
+httpServer.listen(3000, function(){
+  console.log('The HTTP server is listening on the port 3000.');
 });
 
 // Define handlers
@@ -86,7 +86,7 @@ var handlers = {};
 // Hello handler
 handlers.hello = function(data, callback){
   callback(200, {'message': 'Welcome to the server!'});
-  console.log('The server received a Hello.');
+  console.log('The server received a Hello request.');
 };
 
 // Not found handler
